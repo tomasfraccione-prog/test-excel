@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: ¿Tu negocio superó el techo de Excel?</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
+        .quiz-container { max-width: 600px; margin: auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #1e7e34; text-align: center; margin-bottom: 10px; }
+        p.intro { text-align: center; color: #666; margin-bottom: 30px; }
+        .question { display: none; }
+        .question.active { display: block; }
+        .options { list-style: none; padding: 0; margin-top: 20px; }
+        .options li { margin-bottom: 12px; }
+        button.option-btn { width: 100%; text-align: left; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; background: white; cursor: pointer; transition: 0.3s; font-size: 16px; }
+        button.option-btn:hover { border-color: #1e7e34; background-color: #f0fff4; }
+        .feedback { margin-top: 15px; padding: 15px; border-radius: 8px; display: none; font-size: 14px; }
+        .feedback.correct { background: #d4edda; color: #155724; display: block; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; display: block; }
+        .next-btn { display: none; margin-top: 20px; width: 100%; padding: 15px; background: #1e7e34; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .results { display: none; text-align: center; }
+        .cta-btn { display: inline-block; margin-top: 20px; padding: 15px 30px; background: #007bff; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div id="quiz">
+        <h2>¿Tu negocio superó el techo de Excel?</h2>
+        <p class="intro">Respondé estas 5 preguntas y descubrí si es hora de modernizar tu tecnología.</p>
+
+        <div class="question active" data-index="0">
+            <strong>1. ¿Tu equipo maneja archivos con nombres como 'Ventas_Final_v2' o 'Copia_REVISADO'?</strong>
+            <ul class="options">
+                <li><button class="option-btn" onclick="checkAnswer(true, 0, '¡Correcto! Eso se llama fragmentación de datos y genera caos operativo.')">Sí, pasa seguido</button></li>
+                <li><button class="option-btn" onclick="checkAnswer(false, 0, 'Incluso si no pasa, la falta de una base única es un riesgo latente.')">No, somos muy ordenados</button></li>
+            </ul>
+            <div class="feedback" id="fb-0"></div>
+            <button class="next-btn" id="next-0" onclick="nextQuestion(0)">Siguiente pregunta</button>
+        </div>
+
+        <div class="question" data-index="1">
+            <strong>2. ¿Alguna vez alguien borró una fórmula o un dato por error y se dieron cuenta tarde?</strong>
+            <ul class="options">
+                <li><button class="option-btn" onclick="checkAnswer(true, 1, 'Exacto. En Excel la lógica y los datos están sueltos; un software a medida protege la integridad de tu info.')">Sí, nos ha costado dolores de cabeza</button></li>
+                <li><button class="option-btn" onclick="checkAnswer(false, 1, 'Están a un click de que pase. El error humano es inevitable en planillas.')">Nunca nos pasó</button></li>
+            </ul>
+            <div class="feedback" id="fb-1"></div>
+            <button class="next-btn" id="next-1" onclick="nextQuestion(1)">Siguiente pregunta</button>
+        </div>
+
+        <div class="question" data-index="2">
+            <strong>3. ¿El archivo se vuelve lento o se cierra cuando tiene mucha información?</strong>
+            <ul class="options">
+                <li><button class="option-btn" onclick="checkAnswer(true, 2, 'Llegaste al límite de procesamiento. Excel no es una base de datos profesional.')">Sí, tarda mucho en abrir</button></li>
+                <li><button class="option-btn" onclick="checkAnswer(false, 2, 'A medida que crezcan, la velocidad será un problema crítico.')">Todavía funciona rápido</button></li>
+            </ul>
+            <div class="feedback" id="fb-2"></div>
+            <button class="next-btn" id="next-2" onclick="nextQuestion(2)">Siguiente pregunta</button>
+        </div>
+
+        <div class="question" data-index="3">
+            <strong>4. ¿Sabés exactamente quién modificó un dato sensible ayer a las 15hs?</strong>
+            <ul class="options">
+                <li><button class="option-btn" onclick="checkAnswer(false, 3, 'Excel no tiene auditoría real. Un software a medida registra cada movimiento por seguridad.')">No, es imposible saberlo</button></li>
+                <li><button class="option-btn" onclick="checkAnswer(true, 3, 'Si lo hacés manual, perdés tiempo. Si el sistema no lo hace solo, no es seguro.')">Lo anotamos manualmente</button></li>
+            </ul>
+            <div class="feedback" id="fb-3"></div>
+            <button class="next-btn" id="next-3" onclick="nextQuestion(3)">Siguiente pregunta</button>
+        </div>
+
+        <div class="question" data-index="4">
+            <strong>5. ¿Copiás y pegás datos de una planilla a otra para armar reportes?</strong>
+            <ul class="options">
+                <li><button class="option-btn" onclick="checkAnswer(true, 4, 'Eso es trabajo administrativo que un software podría hacer por vos en un segundo.')">Sí, pierdo horas en eso</button></li>
+                <li><button class="option-btn" onclick="checkAnswer(false, 4, 'La unificación es la clave para escalar tu negocio.')">No, están conectadas</button></li>
+            </ul>
+            <div class="feedback" id="fb-4"></div>
+            <button class="next-btn" id="next-4" onclick="showResults()">Ver resultado final</button>
+        </div>
+    </div>
+
+    <div class="results" id="results">
+        <h2>Resultado del Diagnóstico</h2>
+        <p id="score-text"></p>
+        <p>Tu negocio está listo para dejar de depender de planillas y empezar a usar tecnología que potencie tu crecimiento.</p>
+        <a href="https://wa.me/TUNUMERO" class="cta-btn">Solicitar Consultoría Gratuita</a>
+    </div>
+</div>
+
+<script>
+    let score = 0;
+    function checkAnswer(isCorrect, index, feedbackText) {
+        const fb = document.getElementById('fb-' + index);
+        fb.innerText = feedbackText;
+        fb.classList.add(isCorrect ? 'correct' : 'wrong');
+        if(isCorrect) score++;
+        
+        const buttons = document.querySelectorAll('.question[data-index="'+index+'"] .option-btn');
+        buttons.forEach(btn => btn.disabled = true);
+        document.getElementById('next-' + index).style.display = 'block';
+    }
+
+    function nextQuestion(currentIndex) {
+        document.querySelector('.question[data-index="'+currentIndex+'"]').classList.remove('active');
+        document.querySelector('.question[data-index="'+(currentIndex+1)+'"]').classList.add('active');
+    }
+
+    function showResults() {
+        document.getElementById('quiz').style.display = 'none';
+        const resDiv = document.getElementById('results');
+        resDiv.style.display = 'block';
+        document.getElementById('score-text').innerText = 'Detectamos ' + score + ' de 5 riesgos críticos en tu operativa actual.';
+    }
+</script>
+
+</body>
+</html>
