@@ -3,115 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test: ¿Tu negocio superó el techo de Excel?</title>
+    <title>Diagnóstico de Madurez Tecnológica 2026</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
-        .quiz-container { max-width: 600px; margin: auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { color: #1e7e34; text-align: center; margin-bottom: 10px; }
-        p.intro { text-align: center; color: #666; margin-bottom: 30px; }
-        .question { display: none; }
-        .question.active { display: block; }
-        .options { list-style: none; padding: 0; margin-top: 20px; }
-        .options li { margin-bottom: 12px; }
-        button.option-btn { width: 100%; text-align: left; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; background: white; cursor: pointer; transition: 0.3s; font-size: 16px; }
-        button.option-btn:hover { border-color: #1e7e34; background-color: #f0fff4; }
-        .feedback { margin-top: 15px; padding: 15px; border-radius: 8px; display: none; font-size: 14px; }
-        .feedback.correct { background: #d4edda; color: #155724; display: block; }
-        .feedback.wrong { background: #f8d7da; color: #721c24; display: block; }
-        .next-btn { display: none; margin-top: 20px; width: 100%; padding: 15px; background: #1e7e34; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .results { display: none; text-align: center; }
-        .cta-btn { display: inline-block; margin-top: 20px; padding: 15px 30px; background: #007bff; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; }
+        :root { --primary: #1e7e34; --secondary: #007bff; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: #333; padding: 20px; }
+        .quiz-container { max-width: 650px; margin: auto; background: #fff; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        /* Barra de Progreso */
+        .progress-container { width: 100%; background: #e0e0e0; height: 8px; border-radius: 10px; margin-bottom: 30px; }
+        .progress-bar { height: 100%; background: var(--primary); width: 0%; border-radius: 10px; transition: 0.5s; }
+        
+        h2 { color: var(--primary); text-align: center; margin-top: 0; }
+        .question, .lead-form, .results { display: none; }
+        .active { display: block; animation: fadeIn 0.5s; }
+        
+        .options { list-style: none; padding: 0; margin: 25px 0; }
+        button.option-btn { width: 100%; text-align: left; padding: 18px; border: 2px solid #eee; border-radius: 10px; background: white; cursor: pointer; transition: 0.2s; font-size: 16px; margin-bottom: 10px; }
+        button.option-btn:hover { border-color: var(--primary); background: #f0fff4; }
+        
+        /* Formulario de Captura */
+        input { width: 94%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .submit-btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 18px; }
+        
+        .result-box { padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 5px solid; }
+        .peligro { border-color: #dc3545; background: #fff5f5; color: #721c24; }
+        .moderado { border-color: #ffc107; background: #fffdeb; color: #856404; }
+        .estable { border-color: #28a745; background: #f4fff6; color: #155724; }
+
+        .pdf-btn { background: #555; margin-top: 10px; }
+        .cta-btn { display: block; text-align: center; margin-top: 20px; padding: 15px; background: var(--secondary); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="quiz-container">
-    <div id="quiz">
-        <h2>¿Tu negocio superó el techo de Excel?</h2>
-        <p class="intro">Respondé estas 5 preguntas y descubrí si es hora de modernizar tu tecnología.</p>
+    <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
 
-        <div class="question active" data-index="0">
-            <strong>1. ¿Tu equipo maneja archivos con nombres como 'Ventas_Final_v2' o 'Copia_REVISADO'?</strong>
-            <ul class="options">
-                <li><button class="option-btn" onclick="checkAnswer(true, 0, '¡Correcto! Eso se llama fragmentación de datos y genera caos operativo.')">Sí, pasa seguido</button></li>
-                <li><button class="option-btn" onclick="checkAnswer(false, 0, 'Incluso si no pasa, la falta de una base única es un riesgo latente.')">No, somos muy ordenados</button></li>
-            </ul>
-            <div class="feedback" id="fb-0"></div>
-            <button class="next-btn" id="next-0" onclick="nextQuestion(0)">Siguiente pregunta</button>
+    <div id="quiz-steps">
+        <div id="questions-container"></div>
+
+        <div id="lead-form" class="lead-form">
+            <h2>¡Casi listo!</h2>
+            <p>Ingresá tus datos para procesar el <b>Informe de Riesgo Operativo</b> personalizado.</p>
+            <input type="text" id="userName" placeholder="Nombre completo" required>
+            <input type="email" id="userEmail" placeholder="Email corporativo" required>
+            <input type="text" id="userCompany" placeholder="Empresa" required>
+            <button class="submit-btn" onclick="processResults()">Obtener mi Diagnóstico</button>
         </div>
 
-        <div class="question" data-index="1">
-            <strong>2. ¿Alguna vez alguien borró una fórmula o un dato por error y se dieron cuenta tarde?</strong>
-            <ul class="options">
-                <li><button class="option-btn" onclick="checkAnswer(true, 1, 'Exacto. En Excel la lógica y los datos están sueltos; un software a medida protege la integridad de tu info.')">Sí, nos ha costado dolores de cabeza</button></li>
-                <li><button class="option-btn" onclick="checkAnswer(false, 1, 'Están a un click de que pase. El error humano es inevitable en planillas.')">Nunca nos pasó</button></li>
-            </ul>
-            <div class="feedback" id="fb-1"></div>
-            <button class="next-btn" id="next-1" onclick="nextQuestion(1)">Siguiente pregunta</button>
+        <div id="results" class="results">
+            <h2 id="res-title">Resultado del Diagnóstico</h2>
+            <div id="res-box" class="result-box"></div>
+            <p id="res-desc"></p>
+            <button class="submit-btn pdf-btn" onclick="generatePDF()">📥 Descargar Informe Completo (PDF)</button>
+            <a id="wa-link" href="#" class="cta-btn">Agendar Consultoría para optimizar mi Excel</a>
         </div>
-
-        <div class="question" data-index="2">
-            <strong>3. ¿El archivo se vuelve lento o se cierra cuando tiene mucha información?</strong>
-            <ul class="options">
-                <li><button class="option-btn" onclick="checkAnswer(true, 2, 'Llegaste al límite de procesamiento. Excel no es una base de datos profesional.')">Sí, tarda mucho en abrir</button></li>
-                <li><button class="option-btn" onclick="checkAnswer(false, 2, 'A medida que crezcan, la velocidad será un problema crítico.')">Todavía funciona rápido</button></li>
-            </ul>
-            <div class="feedback" id="fb-2"></div>
-            <button class="next-btn" id="next-2" onclick="nextQuestion(2)">Siguiente pregunta</button>
-        </div>
-
-        <div class="question" data-index="3">
-            <strong>4. ¿Sabés exactamente quién modificó un dato sensible ayer a las 15hs?</strong>
-            <ul class="options">
-                <li><button class="option-btn" onclick="checkAnswer(false, 3, 'Excel no tiene auditoría real. Un software a medida registra cada movimiento por seguridad.')">No, es imposible saberlo</button></li>
-                <li><button class="option-btn" onclick="checkAnswer(true, 3, 'Si lo hacés manual, perdés tiempo. Si el sistema no lo hace solo, no es seguro.')">Lo anotamos manualmente</button></li>
-            </ul>
-            <div class="feedback" id="fb-3"></div>
-            <button class="next-btn" id="next-3" onclick="nextQuestion(3)">Siguiente pregunta</button>
-        </div>
-
-        <div class="question" data-index="4">
-            <strong>5. ¿Copiás y pegás datos de una planilla a otra para armar reportes?</strong>
-            <ul class="options">
-                <li><button class="option-btn" onclick="checkAnswer(true, 4, 'Eso es trabajo administrativo que un software podría hacer por vos en un segundo.')">Sí, pierdo horas en eso</button></li>
-                <li><button class="option-btn" onclick="checkAnswer(false, 4, 'La unificación es la clave para escalar tu negocio.')">No, están conectadas</button></li>
-            </ul>
-            <div class="feedback" id="fb-4"></div>
-            <button class="next-btn" id="next-4" onclick="showResults()">Ver resultado final</button>
-        </div>
-    </div>
-
-    <div class="results" id="results">
-        <h2>Resultado del Diagnóstico</h2>
-        <p id="score-text"></p>
-        <p>Tu negocio está listo para dejar de depender de planillas y empezar a usar tecnología que potencie tu crecimiento.</p>
-        <a href="https://wa.me/TUNUMERO" class="cta-btn">Solicitar Consultoría Gratuita</a>
     </div>
 </div>
 
 <script>
+    const questions = [
+        { q: "¿Tu equipo maneja archivos con nombres como 'Ventas_Final_v2' o 'Copia_REVISADO'?", risk: "Fragmentación de información y pérdida de versiones." },
+        { q: "¿Alguna vez alguien borró una fórmula o un dato por error y se dieron cuenta tarde?", risk: "Vulnerabilidad en la integridad de datos críticos." },
+        { q: "¿El archivo se vuelve lento, se 'traba' o se cierra cuando tiene mucha información?", risk: "Saturación del motor de procesamiento (Techo de Excel)." },
+        { q: "¿Sabés exactamente quién modificó un dato sensible ayer a las 15hs?", risk: "Falta total de auditoría y seguridad de la información." },
+        { q: "¿Copiás y pegás datos de una planilla a otra para armar reportes semanales?", risk: "Alto costo en horas-hombre y error humano por tareas manuales." }
+    ];
+
+    let currentStep = 0;
     let score = 0;
-    function checkAnswer(isCorrect, index, feedbackText) {
-        const fb = document.getElementById('fb-' + index);
-        fb.innerText = feedbackText;
-        fb.classList.add(isCorrect ? 'correct' : 'wrong');
-        if(isCorrect) score++;
+    let userRisks = [];
+
+    // Cargar preguntas al inicio
+    const qCont = document.getElementById('questions-container');
+    questions.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = `question ${i === 0 ? 'active' : ''}`;
+        div.id = `q-${i}`;
+        div.innerHTML = `
+            <strong>${i + 1}. ${item.q}</strong>
+            <ul class="options">
+                <li><button class="option-btn" onclick="answer(${i}, true)">Sí, sucede</button></li>
+                <li><button class="option-btn" onclick="answer(${i}, false)">No / No estoy seguro</button></li>
+            </ul>
+        `;
+        qCont.appendChild(div);
+    });
+
+    function updateProgress() {
+        const percent = ((currentStep) / (questions.length + 1)) * 100;
+        document.getElementById('progressBar').style.width = percent + "%";
+    }
+
+    function answer(index, isRisk) {
+        if(isRisk) {
+            score++;
+            userRisks.push(questions[index].risk);
+        }
+        document.getElementById(`q-${index}`).classList.remove('active');
+        currentStep++;
+        updateProgress();
         
-        const buttons = document.querySelectorAll('.question[data-index="'+index+'"] .option-btn');
-        buttons.forEach(btn => btn.disabled = true);
-        document.getElementById('next-' + index).style.display = 'block';
+        if(currentStep < questions.length) {
+            document.getElementById(`q-${currentStep}`).classList.add('active');
+        } else {
+            document.getElementById('lead-form').classList.add('active');
+        }
     }
 
-    function nextQuestion(currentIndex) {
-        document.querySelector('.question[data-index="'+currentIndex+'"]').classList.remove('active');
-        document.querySelector('.question[data-index="'+(currentIndex+1)+'"]').classList.add('active');
+    function processResults() {
+        const name = document.getElementById('userName').value;
+        if(!name) return alert("Por favor, completá tus datos.");
+        
+        document.getElementById('lead-form').classList.remove('active');
+        document.getElementById('results').classList.add('active');
+        currentStep++;
+        updateProgress();
+
+        const resBox = document.getElementById('res-box');
+        const resDesc = document.getElementById('res-desc');
+        let category = "";
+        let msg = "";
+
+        if(score >= 4) {
+            category = "PELIGRO INMINENTE";
+            resBox.className = "result-box peligro";
+            msg = "Tu operativa depende de hilos. La pérdida de datos o el freno del negocio es un riesgo diario.";
+        } else if(score >= 2) {
+            category = "RIESGO MODERADO";
+            resBox.className = "result-box moderado";
+            msg = "Estás perdiendo eficiencia y dinero en tareas manuales que ya superaron la capacidad del Excel.";
+        } else {
+            category = "OPERACIÓN ESTABLE";
+            resBox.className = "result-box estable";
+            msg = "Tu sistema funciona, pero hay un alto margen para optimizar procesos y escalar.";
+        }
+
+        resBox.innerHTML = `<strong>Nivel de Riesgo: ${category}</strong><br>Puntaje: ${score}/5`;
+        resDesc.innerText = msg;
+
+        // Link de WhatsApp personalizado
+        const waMsg = `Hola! Soy ${name} de la empresa ${document.getElementById('userCompany').value}. Hice el test de Excel y mi nivel de riesgo es ${category} (${score}/5). Me gustaría hablar sobre una solución a medida.`;
+        document.getElementById('wa-link').href = `https://wa.me/TUNUMERO?text=${encodeURIComponent(waMsg)}`;
     }
 
-    function showResults() {
-        document.getElementById('quiz').style.display = 'none';
-        const resDiv = document.getElementById('results');
-        resDiv.style.display = 'block';
-        document.getElementById('score-text').innerText = 'Detectamos ' + score + ' de 5 riesgos críticos en tu operativa actual.';
+    function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const name = document.getElementById('userName').value;
+        const company = document.getElementById('userCompany').value;
+
+        doc.setFontSize(20);
+        doc.setTextColor(30, 126, 52);
+        doc.text("Informe de Diagnóstico Tecnológico 2026", 20, 20);
+        
+        doc.setFontSize(12);
+        doc.setTextColor(100);
+        doc.text(`Preparado para: ${name} - ${company}`, 20, 30);
+        doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 20, 35);
+        
+        doc.setTextColor(0);
+        doc.setFontSize(14);
+        doc.text("Análisis de Situación:", 20, 50);
+        
+        doc.setFontSize(11);
+        let y = 60;
+        if(userRisks.length > 0) {
+            doc.text("Se detectaron las siguientes vulnerabilidades críticas:", 20, y);
+            y += 10;
+            userRisks.forEach(risk => {
+                doc.text(`- ${risk}`, 25, y);
+                y += 8;
+            });
+        } else {
+            doc.text("No se detectaron riesgos críticos inmediatos, pero se recomienda optimización.", 20, y);
+            y += 10;
+        }
+
+        y += 10;
+        doc.setFontSize(14);
+        doc.text("Recomendación del Equipo de Desarrollo:", 20, y);
+        y += 10;
+        doc.setFontSize(11);
+        const advice = score >= 3 ? 
+            "Es urgente migrar los procesos críticos a una arquitectura de base de datos relacional para evitar pérdida de información y costos ocultos por ineficiencia." : 
+            "Se recomienda una auditoría de procesos para identificar qué tareas repetitivas pueden ser automatizadas mediante scripts o mini-apps a medida.";
+        
+        const splitAdvice = doc.splitTextToSize(advice, 170);
+        doc.text(splitAdvice, 20, y);
+
+        doc.save(`Diagnostico_Tecnologico_${company}.pdf`);
     }
 </script>
 
