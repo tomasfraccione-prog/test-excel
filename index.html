@@ -46,16 +46,14 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Título Blanco con Sombreado solicitado */
         .main-title {
-            color: #FFFFFF; /* Blanco */
+            color: #FFFFFF;
             text-align: center;
             max-width: 800px;
             margin-bottom: 30px;
             font-size: 36px;
             font-weight: 800;
             line-height: 1.2;
-            /* Sombreado negro para separar del fondo */
             text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.7); 
         }
 
@@ -122,6 +120,24 @@
         .result-box { padding: 25px; border-radius: var(--radius); margin: 20px 0; text-align: center; }
         .escalar { background: #EBF2FF; border: 1px solid #0034EB; color: #0034EB; }
         
+        /* Contador de Oportunidades */
+        .opp-counter {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1A1A1C;
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .opp-number {
+            color: #0034EB;
+            font-size: 28px;
+            display: block;
+            font-weight: 800;
+        }
+
         .cta-btn { 
             display: block; 
             text-align: center; 
@@ -174,7 +190,11 @@
             <div id="results" class="results">
                 <h2>Diagnóstico Finalizado</h2>
                 <div id="res-box" class="result-box"></div>
-                <p id="res-desc" style="text-align:center;"></p>
+                
+                <div id="opp-display" class="opp-counter">
+                    Identificamos <span id="opp-count" class="opp-number">0</span> oportunidades de mejora en tu proceso actual.
+                </div>
+
                 <button class="submit-btn" style="background:#555;" onclick="generatePDF()">📥 Descargar Informe Completo (PDF)</button>
                 <a id="wa-link" href="#" class="cta-btn">Agendar una llamada de asesoría</a>
             </div>
@@ -237,9 +257,10 @@
         const cat = "ALTO POTENCIAL DE ESCALAMIENTO";
         resBox.className = "result-box escalar";
         resBox.innerHTML = `<strong>${cat}</strong>`;
-        document.getElementById('res-desc').innerText = "Tu operativa actual está lista para el siguiente nivel. Descargá el informe para ver los puntos de mejora.";
+        
+        // Mostrar la cantidad de oportunidades
+        document.getElementById('opp-count').innerText = score;
 
-        // Actualizado el link del botón al Calendario Cal.com
         document.getElementById('wa-link').href = `https://cal.com/gonzalo-izquierdo-brown/30min`;
     }
 
@@ -249,7 +270,6 @@
         const name = document.getElementById('userName').value;
         const industry = document.getElementById('userIndustry').value;
 
-        // Estilo PDF
         doc.setFont("helvetica", "bold"); doc.setFontSize(20);
         doc.text("Informe de Diagnóstico y Escalamiento 2026", 20, 25);
         
@@ -259,7 +279,7 @@
         doc.setDrawColor(0, 52, 235); doc.line(20, 40, 190, 40);
 
         doc.setTextColor(0); doc.setFontSize(14); doc.setFont("helvetica", "bold");
-        doc.text("1. Resumen de Diagnóstico:", 20, 55);
+        doc.text(`1. Resumen de Diagnóstico (${score} oportunidades de mejora):`, 20, 55);
         doc.setFont("helvetica", "normal"); doc.setFontSize(10);
         let y = 65;
         if(userRisks.length > 0) {
@@ -294,25 +314,21 @@
         const splitAdvice = doc.splitTextToSize(advice, 160);
         doc.text(splitAdvice, 25, y);
         
-        // --- CALL TO ACTION EN EL PDF ---
         y += 20;
-        doc.setDrawColor(0, 52, 235);
-        doc.setFillColor(235, 242, 255);
-        doc.rect(20, y, 170, 35, 'F'); // Recuadro para el CTA
+        doc.setDrawColor(0, 52, 235); doc.setFillColor(235, 242, 255);
+        doc.rect(20, y, 170, 35, 'F');
         
         y += 10;
         doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(0, 52, 235);
         doc.text("¿Listo para profundizar en este diagnóstico?", 30, y);
-        
         y += 10;
         doc.setFontSize(10); doc.setTextColor(0);
         doc.text("Agendá una llamada técnica de 30 minutos aquí:", 30, y);
-        
         y += 7;
         doc.setTextColor(0, 52, 235);
         doc.text("https://cal.com/gonzalo-izquierdo-brown/30min", 30, y);
         
-        doc.save(`Diagnostico_Escalamiento_${company}.pdf`);
+        doc.save(`Informe_Escalamiento_${company}.pdf`);
     }
 </script>
 </body>
