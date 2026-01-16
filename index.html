@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diagnóstico de Escalamiento Tecnológico 2026</title>
     <link href="https://api.fontshare.com/v2/css?f[]=geist@1,2&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <style>
@@ -14,8 +13,6 @@
             --bg-body: #F8F8F8;
             --radius: 20px;
             --gradient: linear-gradient(135deg, #0034EB, #00F3F9, #0A34CD, #425680, #81FFD9);
-            --success: #1e7e34;
-            --warning: #FF8C00; /* Naranja para riesgos */
         }
 
         body { 
@@ -29,7 +26,6 @@
             min-height: 100vh;
         }
 
-        /* Fondo con el degradado suave pedido */
         .landing-wrapper {
             width: 100%;
             min-height: 100vh;
@@ -37,6 +33,7 @@
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
@@ -56,87 +53,44 @@
             border-radius: var(--radius); 
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             backdrop-filter: blur(10px);
+            position: relative;
         }
 
-        .progress-container { width: 100%; background: #eee; height: 6px; border-radius: 10px; margin-bottom: 30px; }
-        .progress-bar { height: 100%; background: var(--gradient); width: 0%; border-radius: 10px; transition: 0.5s; }
-        
-        h2 { font-weight: 700; text-align: center; margin-top: 0; font-size: 24px; }
-        .question, .lead-form, .results { display: none; }
-        .active { display: block; animation: fadeIn 0.4s ease-out; }
-        
-        .options { list-style: none; padding: 0; margin: 25px 0; }
-        button.option-btn { 
-            width: 100%; 
-            text-align: left; 
-            padding: 20px; 
-            border: 1px solid #ddd; 
-            border-radius: var(--radius); 
-            background: white; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            font-size: 16px; 
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            color: var(--primary-text);
-            font-family: 'Geist', sans-serif;
-        }
-        
-        button.option-btn:hover { 
-            border-color: #0034EB; 
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,52,235,0.1);
+        /* Estilo para el Logo */
+        .footer-logo {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0,0,0,0.05);
         }
 
-        /* Iconos */
-        .fa-check-circle { color: var(--success); }
-        .fa-exclamation-triangle { color: var(--warning); }
-
-        input, select { 
-            width: 100%; 
-            padding: 15px; 
-            margin-bottom: 15px; 
-            border: 1px solid #ddd; 
-            border-radius: var(--radius); 
-            font-size: 16px; 
-            box-sizing: border-box;
-            background: #fff;
-            font-family: 'Geist', sans-serif;
-        }
-
-        .submit-btn { 
-            width: 100%; 
-            padding: 18px; 
-            background: var(--primary-text); 
-            color: white; 
-            border: none; 
-            border-radius: var(--radius); 
-            cursor: pointer; 
-            font-weight: 600; 
-            font-size: 18px;
+        .footer-logo img {
+            max-width: 120px; /* Tamaño pequeño */
+            height: auto;
+            opacity: 0.8;
+            filter: grayscale(100%); /* Opcional: logo en gris para que sea discreto */
             transition: 0.3s;
         }
 
-        .submit-btn:hover { opacity: 0.9; transform: scale(1.02); }
-
-        .result-box { padding: 25px; border-radius: var(--radius); margin: 20px 0; text-align: center; }
-        .escalar { background: #EBF2FF; border: 1px solid #0034EB; color: #0034EB; }
-        
-        .cta-btn { 
-            display: block; 
-            text-align: center; 
-            margin-top: 20px; 
-            padding: 18px; 
-            background: var(--gradient); 
-            color: white; 
-            text-decoration: none; 
-            border-radius: var(--radius); 
-            font-weight: bold; 
-            box-shadow: 0 10px 20px rgba(0,52,235,0.2);
+        .footer-logo img:hover {
+            opacity: 1;
+            filter: grayscale(0%);
         }
 
+        /* Resto de los estilos previos se mantienen igual */
+        .progress-container { width: 100%; background: #eee; height: 6px; border-radius: 10px; margin-bottom: 30px; }
+        .progress-bar { height: 100%; background: var(--gradient); width: 0%; border-radius: 10px; transition: 0.5s; }
+        h2 { font-weight: 700; text-align: center; margin-top: 0; font-size: 24px; }
+        .question, .lead-form, .results { display: none; }
+        .active { display: block; animation: fadeIn 0.4s ease-out; }
+        .options { list-style: none; padding: 0; margin: 25px 0; }
+        button.option-btn { width: 100%; text-align: center; padding: 20px; border: 1px solid #ddd; border-radius: var(--radius); background: white; cursor: pointer; transition: 0.3s; font-size: 16px; margin-bottom: 12px; color: var(--primary-text); font-family: 'Geist', sans-serif; font-weight: 500; }
+        button.option-btn:hover { border-color: #0034EB; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,52,235,0.1); }
+        input, select { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: var(--radius); font-size: 16px; box-sizing: border-box; background: #fff; font-family: 'Geist', sans-serif; }
+        .submit-btn { width: 100%; padding: 18px; background: var(--primary-text); color: white; border: none; border-radius: var(--radius); cursor: pointer; font-weight: 600; font-size: 18px; transition: 0.3s; }
+        .result-box { padding: 25px; border-radius: var(--radius); margin: 20px 0; text-align: center; }
+        .escalar { background: #EBF2FF; border: 1px solid #0034EB; color: #0034EB; }
+        .cta-btn { display: block; text-align: center; margin-top: 20px; padding: 18px; background: var(--gradient); color: white; text-decoration: none; border-radius: var(--radius); font-weight: bold; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -151,15 +105,19 @@
 
             <div id="lead-form" class="lead-form">
                 <h2>Casi terminamos...</h2>
-                <p style="text-align:center; color:#666;">Completá tus datos para recibir el informe cualitativo por rubro.</p>
+                <p style="text-align:center; color:#666;">Completá tus datos para generar tu Informe de Escalamiento.</p>
                 <input type="text" id="userName" placeholder="Nombre completo">
-                <input type="email" id="userEmail" placeholder="Email corporativo">
                 <input type="text" id="userCompany" placeholder="Empresa">
                 <select id="userIndustry">
                     <option value="">Seleccioná tu rubro</option>
-                    <option value="Agro">Agro (Plantineras, Hidroponía, Tradicional)</option>
+                    <option value="Agro">Agro (Tradicional e Hidroponía)</option>
                     <option value="Juridico">Estudio Jurídico / Legal</option>
-                    <option value="Empresa">Empresa General / Pyme / Servicios</option>
+                    <option value="Logistica">Logística y Transporte</option>
+                    <option value="Salud">Salud y Centros Médicos</option>
+                    <option value="Construccion">Construcción y Real Estate</option>
+                    <option value="Retail">E-commerce y Retail</option>
+                    <option value="Industria">Industria y Manufactura</option>
+                    <option value="Servicios">Servicios Profesionales / Pyme</option>
                 </select>
                 <button class="submit-btn" onclick="processResults()">Ver Diagnóstico Estratégico</button>
             </div>
@@ -172,19 +130,24 @@
                 <a id="wa-link" href="#" class="cta-btn">Agendar una llamada de asesoría</a>
             </div>
         </div>
+
+        <div class="footer-logo">
+            <img src="image_1.png" alt="Logo Empresa">
+        </div>
     </div>
 </div>
 
 <script>
+    // Lógica de JavaScript se mantiene igual...
     const questions = [
-        { q: "¿Tu equipo maneja archivos con nombres como 'Ventas_Final_v2' o 'Copia_REVISADO'?", risk: "Fragmentación de información y pérdida de versiones." },
-        { q: "¿Alguna vez alguien borró una fórmula o un dato por error y se dieron cuenta tarde?", risk: "Vulnerabilidad en la integridad de datos críticos." },
-        { q: "¿El archivo se vuelve lento o se cierra cuando tiene mucha información?", risk: "Saturación del motor de procesamiento (Techo de Excel)." },
-        { q: "¿Sabés exactamente quién modificó un dato sensible ayer a las 15hs?", risk: "Falta total de auditoría y seguridad de la información." },
-        { q: "¿Copiás y pegás datos de una planilla a otra para armar reportes?", risk: "Alto costo en horas-hombre por tareas manuales." }
+        { q: "¿Tu equipo maneja archivos con nombres como 'Ventas_Final_v2' o 'Copia_REVISADO'?" },
+        { q: "¿Alguna vez alguien borró una fórmula o un dato por error y se dieron cuenta tarde?" },
+        { q: "¿El archivo se vuelve lento o se cierra cuando tiene mucha información?" },
+        { q: "¿Sabés exactamente quién modificó un dato sensible ayer a las 15hs?" },
+        { q: "¿Copiás y pegás datos de una planilla a otra para armar reportes?" }
     ];
 
-    let currentStep = 0; let score = 0; let userRisks = [];
+    let currentStep = 0; let score = 0;
 
     const qCont = document.getElementById('questions-container');
     questions.forEach((item, i) => {
@@ -195,8 +158,8 @@
             <h2>Pregunta ${i+1}</h2>
             <p style="text-align:center; font-size:18px;">${item.q}</p>
             <ul class="options">
-                <li><button class="option-btn" onclick="answer(${i}, true)"><span>Sí, nos pasa</span> <i class="fas fa-exclamation-triangle"></i></button></li>
-                <li><button class="option-btn" onclick="answer(${i}, false)"><span>No sucede</span> <i class="fas fa-check-circle"></i></button></li>
+                <li><button class="option-btn" onclick="answer(${i}, true)">Sí, sucede</button></li>
+                <li><button class="option-btn" onclick="answer(${i}, false)">No / No estoy seguro</button></li>
             </ul>
         `;
         qCont.appendChild(div);
@@ -208,7 +171,7 @@
     }
 
     function answer(index, isRisk) {
-        if(isRisk) { score++; userRisks.push(questions[index].risk); }
+        if(isRisk) { score++; }
         document.getElementById(`q-${index}`).classList.remove('active');
         currentStep++; updateProgress();
         if(currentStep < questions.length) { document.getElementById(`q-${currentStep}`).classList.add('active'); } 
@@ -219,17 +182,14 @@
         if(!document.getElementById('userName').value || !document.getElementById('userIndustry').value) return alert("Por favor, completá todos los campos.");
         document.getElementById('lead-form').classList.remove('active');
         document.getElementById('results').classList.add('active');
-        
         const resBox = document.getElementById('res-box');
         const resDesc = document.getElementById('res-desc');
         let cat = "ALTO POTENCIAL DE ESCALAMIENTO";
-        let msg = "Tu estructura actual llegó al límite. Implementar software a medida desbloqueará un crecimiento masivo al automatizar el caos actual.";
-
+        let msg = "Tu estructura actual llegó al límite. El software a medida es la llave para multiplicar tu capacidad operativa.";
         resBox.className = "result-box escalar";
-        resBox.innerHTML = `<i class="fas fa-rocket" style="font-size:30px; margin-bottom:10px;"></i><br><strong>${cat}</strong><br>Detectamos puntos clave para optimizar.`;
+        resBox.innerHTML = `<strong>${cat}</strong>`;
         resDesc.innerText = msg;
-
-        const waMsg = `Hola! Soy ${document.getElementById('userName').value} de ${document.getElementById('userCompany').value}. Hice el test de Excel y mi diagnóstico es: ${cat}. Me interesa agendar la asesoría para el rubro ${document.getElementById('userIndustry').value}.`;
+        const waMsg = `Hola! Soy ${document.getElementById('userName').value} de ${document.getElementById('userCompany').value}. Hice el test de Excel (${cat}). Me interesa agendar la asesoría para el rubro ${document.getElementById('userIndustry').value}.`;
         document.getElementById('wa-link').href = `https://wa.me/TUNUMERO?text=${encodeURIComponent(waMsg)}`;
     }
 
@@ -237,27 +197,25 @@
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
         const company = document.getElementById('userCompany').value;
         const industry = document.getElementById('userIndustry').value;
-
-        doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(26, 26, 28);
-        doc.text("Plan de Escalamiento Tecnológico 2026", 20, 30);
-        
-        doc.setFont("helvetica", "normal"); doc.setFontSize(12); doc.setTextColor(100);
+        doc.setFont("helvetica", "bold"); doc.setFontSize(22);
+        doc.text("Hoja de Ruta Tecnológica 2026", 20, 30);
+        doc.setFontSize(12); doc.setTextColor(100);
         doc.text(`Empresa: ${company} | Rubro: ${industry}`, 20, 40);
-        
-        doc.setFontSize(14); doc.setTextColor(26, 26, 28); doc.text("Puntos detectados para mejora:", 20, 60);
-        doc.setFontSize(11); let y = 70;
-        userRisks.forEach(risk => { doc.text(`> ${risk}`, 25, y); y += 8; });
-
-        y += 15; doc.setFontSize(14); doc.text(`Visión Estratégica para el sector ${industry}:`, 20, y);
-        y += 10; doc.setFontSize(11);
-        
+        doc.setTextColor(0); doc.setFontSize(14); doc.text(`Recomendación para ${industry}:`, 20, 60);
+        doc.setFontSize(11); 
         let advice = "";
-        if(industry === "Agro") advice = "En el Agro 2026, la escala se logra con trazabilidad automatizada. Su diagnóstico sugiere que la migración a una plataforma unificada permitiría predecir rindes y gestionar stock de plantines sin errores de carga manual, aumentando la rentabilidad por hectárea/unidad.";
-        else if(industry === "Juridico") advice = "Para estudios jurídicos, el escalamiento real ocurre al eliminar la procuración manual. Un software a medida que automatice la redacción de escritos y el seguimiento de expedientes permitiría procesar el triple de causas con la misma estructura actual.";
-        else advice = "El techo operativo de las Pymes suele ser la desconexión de datos. Unificar sus procesos en un software a medida permitirá que la dirección tome decisiones en tiempo real y que el equipo se enfoque en vender, no en cargar planillas.";
-
+        switch(industry) {
+            case "Agro": advice = "En el Agro argentino, la escala se logra con trazabilidad. Recomendamos eliminar las planillas de campo por una App offline de registro de lotes y stock de plantines para predecir rindes con exactitud."; break;
+            case "Juridico": advice = "Para estudios legales, la automatización documental es clave. Un sistema que genere escritos automáticamente y se sincronice con el PJN/Lex100 eliminará horas de carga manual diaria."; break;
+            case "Logistica": advice = "En logística, el Excel es un cuello de botella. Necesitan una plataforma de tracking de flota y stock en tiempo real que optimice rutas y reduzca costos de combustible y tiempos de espera."; break;
+            case "Salud": advice = "Para centros médicos, la eficiencia está en la gestión de turnos e historias clínicas integradas. Un software a medida evita ausentismos y centraliza la atención al paciente de forma segura."; break;
+            case "Construccion": advice = "En construcción, el desvío de costos es el gran enemigo. Un software de gestión de obra permite controlar compras, acopio y certificaciones en tiempo real para proteger el margen de ganancia."; break;
+            case "Retail": advice = "Para el retail, la omnicanalidad es obligatoria. Unificar el stock de sucursales, depósitos y e-commerce en una sola base evitará ventas sin stock y errores de facturación."; break;
+            case "Industria": advice = "En manufactura, el software debe controlar la línea de producción. Automatizar el reporte de paradas de máquina y el mantenimiento preventivo asegura una planta funcionando al 100%."; break;
+            case "Servicios": advice = "Para Pymes de servicios, unificar las 'islas de información' es prioridad. Conectar ventas con administración permitirá escalar sin necesidad de contratar más personal de oficina."; break;
+        }
         const splitAdvice = doc.splitTextToSize(advice, 170);
-        doc.text(splitAdvice, 20, y);
+        doc.text(splitAdvice, 20, 75);
         doc.save(`Diagnostico_${company}.pdf`);
     }
 </script>
