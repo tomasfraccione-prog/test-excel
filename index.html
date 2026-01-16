@@ -244,4 +244,22 @@
         doc.setFont("helvetica", "normal"); doc.setFontSize(12); doc.setTextColor(100);
         doc.text(`Empresa: ${company} | Rubro: ${industry}`, 20, 40);
         
-        doc.setFontSize(14); doc.setTextColor(26, 26, 28);
+        doc.setFontSize(14); doc.setTextColor(26, 26, 28); doc.text("Puntos detectados para mejora:", 20, 60);
+        doc.setFontSize(11); let y = 70;
+        userRisks.forEach(risk => { doc.text(`> ${risk}`, 25, y); y += 8; });
+
+        y += 15; doc.setFontSize(14); doc.text(`Visión Estratégica para el sector ${industry}:`, 20, y);
+        y += 10; doc.setFontSize(11);
+        
+        let advice = "";
+        if(industry === "Agro") advice = "En el Agro 2026, la escala se logra con trazabilidad automatizada. Su diagnóstico sugiere que la migración a una plataforma unificada permitiría predecir rindes y gestionar stock de plantines sin errores de carga manual, aumentando la rentabilidad por hectárea/unidad.";
+        else if(industry === "Juridico") advice = "Para estudios jurídicos, el escalamiento real ocurre al eliminar la procuración manual. Un software a medida que automatice la redacción de escritos y el seguimiento de expedientes permitiría procesar el triple de causas con la misma estructura actual.";
+        else advice = "El techo operativo de las Pymes suele ser la desconexión de datos. Unificar sus procesos en un software a medida permitirá que la dirección tome decisiones en tiempo real y que el equipo se enfoque en vender, no en cargar planillas.";
+
+        const splitAdvice = doc.splitTextToSize(advice, 170);
+        doc.text(splitAdvice, 20, y);
+        doc.save(`Diagnostico_${company}.pdf`);
+    }
+</script>
+</body>
+</html>
