@@ -3,37 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagnóstico de Madurez Tecnológica 2026</title>
+    <title>Diagnóstico de Escalamiento Tecnológico 2026</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --primary: #1e7e34; --secondary: #007bff; --bg: #f4f7f6; }
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: #333; padding: 20px; }
         .quiz-container { max-width: 650px; margin: auto; background: #fff; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        
-        /* Barra de Progreso */
         .progress-container { width: 100%; background: #e0e0e0; height: 8px; border-radius: 10px; margin-bottom: 30px; }
         .progress-bar { height: 100%; background: var(--primary); width: 0%; border-radius: 10px; transition: 0.5s; }
-        
         h2 { color: var(--primary); text-align: center; margin-top: 0; }
         .question, .lead-form, .results { display: none; }
         .active { display: block; animation: fadeIn 0.5s; }
-        
         .options { list-style: none; padding: 0; margin: 25px 0; }
         button.option-btn { width: 100%; text-align: left; padding: 18px; border: 2px solid #eee; border-radius: 10px; background: white; cursor: pointer; transition: 0.2s; font-size: 16px; margin-bottom: 10px; }
         button.option-btn:hover { border-color: var(--primary); background: #f0fff4; }
-        
-        /* Formulario de Captura */
-        input { width: 94%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
         .submit-btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 18px; }
-        
         .result-box { padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 5px solid; }
-        .peligro { border-color: #dc3545; background: #fff5f5; color: #721c24; }
+        .escalar { border-color: #007bff; background: #f0f7ff; color: #004085; }
         .moderado { border-color: #ffc107; background: #fffdeb; color: #856404; }
         .estable { border-color: #28a745; background: #f4fff6; color: #155724; }
-
         .pdf-btn { background: #555; margin-top: 10px; }
         .cta-btn { display: block; text-align: center; margin-top: 20px; padding: 15px; background: var(--secondary); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -47,10 +38,16 @@
 
         <div id="lead-form" class="lead-form">
             <h2>¡Casi listo!</h2>
-            <p>Ingresá tus datos para procesar el <b>Informe de Riesgo Operativo</b> personalizado.</p>
+            <p>Completá tus datos para generar el <b>Informe de Escalamiento</b> personalizado.</p>
             <input type="text" id="userName" placeholder="Nombre completo" required>
             <input type="email" id="userEmail" placeholder="Email corporativo" required>
             <input type="text" id="userCompany" placeholder="Empresa" required>
+            <select id="userIndustry" required>
+                <option value="">Seleccioná tu rubro</option>
+                <option value="Agro">Agro (Plantineras, Hidroponía, Tradicional)</option>
+                <option value="Juridico">Estudio Jurídico / Legal</option>
+                <option value="Empresa">Empresa General / Pyme / Servicios</option>
+            </select>
             <button class="submit-btn" onclick="processResults()">Obtener mi Diagnóstico</button>
         </div>
 
@@ -58,8 +55,8 @@
             <h2 id="res-title">Resultado del Diagnóstico</h2>
             <div id="res-box" class="result-box"></div>
             <p id="res-desc"></p>
-            <button class="submit-btn pdf-btn" onclick="generatePDF()">📥 Descargar Informe Completo (PDF)</button>
-            <a id="wa-link" href="#" class="cta-btn">Agendar Consultoría para optimizar mi Excel</a>
+            <button class="submit-btn pdf-btn" onclick="generatePDF()">📥 Descargar Informe por Rubro (PDF)</button>
+            <a id="wa-link" href="#" class="cta-btn">Agendar una llamada de asesoría</a>
         </div>
     </div>
 </div>
@@ -73,23 +70,14 @@
         { q: "¿Copiás y pegás datos de una planilla a otra para armar reportes semanales?", risk: "Alto costo en horas-hombre y error humano por tareas manuales." }
     ];
 
-    let currentStep = 0;
-    let score = 0;
-    let userRisks = [];
+    let currentStep = 0; let score = 0; let userRisks = [];
 
-    // Cargar preguntas al inicio
     const qCont = document.getElementById('questions-container');
     questions.forEach((item, i) => {
         const div = document.createElement('div');
         div.className = `question ${i === 0 ? 'active' : ''}`;
         div.id = `q-${i}`;
-        div.innerHTML = `
-            <strong>${i + 1}. ${item.q}</strong>
-            <ul class="options">
-                <li><button class="option-btn" onclick="answer(${i}, true)">Sí, sucede</button></li>
-                <li><button class="option-btn" onclick="answer(${i}, false)">No / No estoy seguro</button></li>
-            </ul>
-        `;
+        div.innerHTML = `<strong>${i + 1}. ${item.q}</strong><ul class="options"><li><button class="option-btn" onclick="answer(${i}, true)">Sí, sucede</button></li><li><button class="option-btn" onclick="answer(${i}, false)">No / No estoy seguro</button></li></ul>`;
         qCont.appendChild(div);
     });
 
@@ -99,105 +87,68 @@
     }
 
     function answer(index, isRisk) {
-        if(isRisk) {
-            score++;
-            userRisks.push(questions[index].risk);
-        }
+        if(isRisk) { score++; userRisks.push(questions[index].risk); }
         document.getElementById(`q-${index}`).classList.remove('active');
-        currentStep++;
-        updateProgress();
-        
-        if(currentStep < questions.length) {
-            document.getElementById(`q-${currentStep}`).classList.add('active');
-        } else {
-            document.getElementById('lead-form').classList.add('active');
-        }
+        currentStep++; updateProgress();
+        if(currentStep < questions.length) { document.getElementById(`q-${currentStep}`).classList.add('active'); } 
+        else { document.getElementById('lead-form').classList.add('active'); }
     }
 
     function processResults() {
-        const name = document.getElementById('userName').value;
-        if(!name) return alert("Por favor, completá tus datos.");
-        
+        if(!document.getElementById('userName').value || !document.getElementById('userIndustry').value) return alert("Por favor, completá todos los campos.");
         document.getElementById('lead-form').classList.remove('active');
         document.getElementById('results').classList.add('active');
-        currentStep++;
         updateProgress();
 
         const resBox = document.getElementById('res-box');
         const resDesc = document.getElementById('res-desc');
-        let category = "";
-        let msg = "";
+        let cat = ""; let msg = "";
 
         if(score >= 4) {
-            category = "PELIGRO INMINENTE";
-            resBox.className = "result-box peligro";
-            msg = "Tu operativa depende de hilos. La pérdida de datos o el freno del negocio es un riesgo diario.";
+            cat = "ALTO POTENCIAL DE ESCALAMIENTO"; resBox.className = "result-box escalar";
+            msg = "Tu estructura actual llegó al límite. Implementar software a medida desbloqueará un crecimiento masivo al automatizar el caos actual.";
         } else if(score >= 2) {
-            category = "RIESGO MODERADO";
-            resBox.className = "result-box moderado";
-            msg = "Estás perdiendo eficiencia y dinero en tareas manuales que ya superaron la capacidad del Excel.";
+            cat = "RIESGO MODERADO / OPTIMIZABLE"; resBox.className = "result-box moderado";
+            msg = "Tenés procesos que funcionan, pero te quitan tiempo valioso. Hay un gran margen para ganar eficiencia operativa.";
         } else {
-            category = "OPERACIÓN ESTABLE";
-            resBox.className = "result-box estable";
-            msg = "Tu sistema funciona, pero hay un alto margen para optimizar procesos y escalar.";
+            cat = "OPERACIÓN ESTABLE"; resBox.className = "result-box estable";
+            msg = "Tu sistema es ordenado, el siguiente paso es la integración total para escalar sin sumar más personal administrativo.";
         }
 
-        resBox.innerHTML = `<strong>Nivel de Riesgo: ${category}</strong><br>Puntaje: ${score}/5`;
+        resBox.innerHTML = `<strong>Estado: ${cat}</strong><br>Puntaje de Fricción: ${score}/5`;
         resDesc.innerText = msg;
 
-        // Link de WhatsApp personalizado
-        const waMsg = `Hola! Soy ${name} de la empresa ${document.getElementById('userCompany').value}. Hice el test de Excel y mi nivel de riesgo es ${category} (${score}/5). Me gustaría hablar sobre una solución a medida.`;
+        const waMsg = `Hola! Soy ${document.getElementById('userName').value} de ${document.getElementById('userCompany').value}. Hice el test de Excel (${cat}). Me interesa agendar la asesoría para el rubro ${document.getElementById('userIndustry').value}.`;
         document.getElementById('wa-link').href = `https://wa.me/TUNUMERO?text=${encodeURIComponent(waMsg)}`;
     }
 
     function generatePDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+        const { jsPDF } = window.jspdf; const doc = new jsPDF();
         const name = document.getElementById('userName').value;
         const company = document.getElementById('userCompany').value;
+        const industry = document.getElementById('userIndustry').value;
 
-        doc.setFontSize(20);
-        doc.setTextColor(30, 126, 52);
-        doc.text("Informe de Diagnóstico Tecnológico 2026", 20, 20);
+        doc.setFontSize(20); doc.setTextColor(30, 126, 52);
+        doc.text("Hoja de Ruta de Escalamiento Tecnológico", 20, 20);
+        doc.setFontSize(12); doc.setTextColor(100);
+        doc.text(`Empresa: ${company} | Rubro: ${industry}`, 20, 30);
         
-        doc.setFontSize(12);
-        doc.setTextColor(100);
-        doc.text(`Preparado para: ${name} - ${company}`, 20, 30);
-        doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 20, 35);
-        
-        doc.setTextColor(0);
-        doc.setFontSize(14);
-        doc.text("Análisis de Situación:", 20, 50);
-        
-        doc.setFontSize(11);
-        let y = 60;
-        if(userRisks.length > 0) {
-            doc.text("Se detectaron las siguientes vulnerabilidades críticas:", 20, y);
-            y += 10;
-            userRisks.forEach(risk => {
-                doc.text(`- ${risk}`, 25, y);
-                y += 8;
-            });
-        } else {
-            doc.text("No se detectaron riesgos críticos inmediatos, pero se recomienda optimización.", 20, y);
-            y += 10;
-        }
+        doc.setTextColor(0); doc.setFontSize(14); doc.text("Diagnóstico Técnico:", 20, 50);
+        doc.setFontSize(11); let y = 60;
+        userRisks.forEach(risk => { doc.text(`- ${risk}`, 25, y); y += 8; });
 
-        y += 10;
-        doc.setFontSize(14);
-        doc.text("Recomendación del Equipo de Desarrollo:", 20, y);
-        y += 10;
-        doc.setFontSize(11);
-        const advice = score >= 3 ? 
-            "Es urgente migrar los procesos críticos a una arquitectura de base de datos relacional para evitar pérdida de información y costos ocultos por ineficiencia." : 
-            "Se recomienda una auditoría de procesos para identificar qué tareas repetitivas pueden ser automatizadas mediante scripts o mini-apps a medida.";
+        y += 10; doc.setFontSize(14); doc.text(`Recomendación Estratégica para ${industry}:`, 20, y);
+        y += 10; doc.setFontSize(11);
         
+        let advice = "";
+        if(industry === "Agro") advice = "Para el sector Agro, la clave es la trazabilidad digital. Recomendamos centralizar el registro de lotes y aplicaciones en una App offline que elimine las planillas de campo, permitiendo predecir rindes con datos reales y no con estimaciones manuales.";
+        else if(industry === "Juridico") advice = "En el rubro legal, la automatización documental es el mayor multiplicador de ingresos. Sugerimos integrar un sistema de generación de escritos y gestión de plazos que se sincronice con los portales judiciales, eliminando el chequeo manual diario.";
+        else advice = "Para empresas de servicios y Pymes, el foco debe estar en la unificación de islas de información. Conectar ventas, stock y administración en un solo tablero permitirá escalar la facturación sin necesidad de contratar más personal para tareas de carga.";
+
         const splitAdvice = doc.splitTextToSize(advice, 170);
         doc.text(splitAdvice, 20, y);
-
-        doc.save(`Diagnostico_Tecnologico_${company}.pdf`);
+        doc.save(`Plan_Escalamiento_${company}.pdf`);
     }
 </script>
-
 </body>
 </html>
