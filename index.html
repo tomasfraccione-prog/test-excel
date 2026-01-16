@@ -46,16 +46,17 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Título fuera de la caja */
+        /* Título Blanco con Sombreado solicitado */
         .main-title {
-            color: var(--primary-text);
+            color: #FFFFFF; /* Blanco */
             text-align: center;
-            max-width: 700px;
+            max-width: 800px;
             margin-bottom: 30px;
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 800;
             line-height: 1.2;
-            text-shadow: 0 2px 10px rgba(255,255,255,0.3);
+            /* Sombreado negro para separar del fondo */
+            text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.7); 
         }
 
         .quiz-container { 
@@ -151,7 +152,7 @@
             <div id="questions-container"></div>
 
             <div id="lead-form" class="lead-form">
-                <h2>Analizando tus respuestas...</h2>
+                <h2>Casi terminamos...</h2>
                 <p style="text-align:center; color:#666;">Completá tus datos para generar el Informe de Escalamiento cualitativo.</p>
                 <input type="text" id="userName" placeholder="Nombre completo" required>
                 <input type="email" id="userEmail" placeholder="Correo electrónico corporativo" required>
@@ -238,8 +239,8 @@
         resBox.innerHTML = `<strong>${cat}</strong>`;
         document.getElementById('res-desc').innerText = "Tu operativa actual está lista para el siguiente nivel. Descargá el informe para ver los puntos de mejora.";
 
-        const waMsg = `Hola! Soy ${document.getElementById('userName').value} de ${document.getElementById('userCompany').value}. Hice el diagnóstico de Excel y me interesa la asesoría para el rubro ${document.getElementById('userIndustry').value}.`;
-        document.getElementById('wa-link').href = `https://wa.me/5491112345678?text=${encodeURIComponent(waMsg)}`;
+        // Actualizado el link del botón al Calendario Cal.com
+        document.getElementById('wa-link').href = `https://cal.com/gonzalo-izquierdo-brown/30min`;
     }
 
     function generatePDF() {
@@ -293,9 +294,25 @@
         const splitAdvice = doc.splitTextToSize(advice, 160);
         doc.text(splitAdvice, 25, y);
         
-        y += 20; doc.setFont("helvetica", "italic"); doc.text("Este informe es un resumen preliminar. Sugerimos una llamada de asesoría técnica para profundizar.", 20, y);
+        // --- CALL TO ACTION EN EL PDF ---
+        y += 20;
+        doc.setDrawColor(0, 52, 235);
+        doc.setFillColor(235, 242, 255);
+        doc.rect(20, y, 170, 35, 'F'); // Recuadro para el CTA
         
-        doc.save(`Informe_Escalamiento_${company}.pdf`);
+        y += 10;
+        doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(0, 52, 235);
+        doc.text("¿Listo para profundizar en este diagnóstico?", 30, y);
+        
+        y += 10;
+        doc.setFontSize(10); doc.setTextColor(0);
+        doc.text("Agendá una llamada técnica de 30 minutos aquí:", 30, y);
+        
+        y += 7;
+        doc.setTextColor(0, 52, 235);
+        doc.text("https://cal.com/gonzalo-izquierdo-brown/30min", 30, y);
+        
+        doc.save(`Diagnostico_Escalamiento_${company}.pdf`);
     }
 </script>
 </body>
